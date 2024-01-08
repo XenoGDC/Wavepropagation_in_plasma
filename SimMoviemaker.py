@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt # Needed to create the plots and save them 
 import cv2 # Needed to read the images
 import os # Needed to make a folder and to read said folder
 import shutil #Needed to delete folder
-import BølgeSim_reader as rd
+import Wave_Sim_reader as rd
 from time import time
 import numpy as np
 import traceback
