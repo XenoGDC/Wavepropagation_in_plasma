@@ -87,14 +87,11 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     ad = 0
     X = len(Mat[:,0,0])
     Y = len(Mat[0,:,0])
-    # w_count = int(input('How many slices?\n'))
     w_count = 100
 
     #Model for the gaussian curve
     def model_f(x,a,b):
         return b*np.exp(-((x - Y / 2)**2 / a**2))
-    
-    # while wait:
     
 
     # Defines X-positions where we analyse the curve along the y-axis
@@ -188,8 +185,6 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     
     
     #On the left subplot the electric field in the Ez direction is plottet at the time the fitting takes place and at the lines we fit the gaussian curve to.
-    # for ii in range(w_count):
-    #     Mat[int(sig_pos[ii]), :,TimePosition] = 100
 
     xlist = np.linspace(0,I,I)*dx
     ylist = np.linspace(-J/2,J/2,J)*dy
@@ -211,8 +206,6 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     plt.pause(0.01)
 
     print(liny[0])
-
-    
 
     pass
 
@@ -240,8 +233,7 @@ def Waveabsavg(Matrix,start):
         MatAvg += np.abs(Matrix[:,:,tt])
     
     MatAvg = MatAvg/difference
-    # np.sum(np.abs(Matrix[:,:,start:start+int(lambdt/dt)]),keepdims=True)/(start+int(lambdt/dt))
-    
+   
     map1 = plt.pcolormesh(MatAvg, cmap='seismic',vmin=-1, vmax=1)
     cbar = plt.colorbar(map1)
     cbar.set_label('Ez intensity')
@@ -286,14 +278,13 @@ def CMAanalysis(Matrix,density_matrix,cutoff:int,B0,
                 field: str = 'E',omega: float = O,
                 mode: str = 'O',
                 title:str = 'CMA_testplot.png'):
+
     # Taking the absolute to the matrix to sort out the waves
     abMat = np.abs(Matrix)
 
     if len(Matrix[0,0,:]) > 100:
         TimePosition += hundred*100
         hundred = 0
-
-
 
 
     I = int((len(abMat[0,:,0])-1)/2)
@@ -490,62 +481,6 @@ def AnalyseBlobDispersion(Matrix,Wavepoint,plotname:str='Blob_plot.png',timepoin
     
     Matrix_sum = Abs_Matrix[:,:,timepoint]
     timerange = np.linspace(timepoint+1,timepoint+int(Wavelength_time),int(Wavelength_time-1))
-
-    
-    if False:
-        
-        # For the bunches of wavewidths
-
-        Area = np.linspace(I/2,I*4/5,int(I/24))
-
-        Width = []
-
-        guess_lx0,guess_rx0 = J/4,J*3/4
-        guess_amp_l,guess_amp_r = 0.1,0.1
-        guess_sig0l,guess_sig0r = 30,30
-        for y in Area:
-            try:
-                for t in timerange:
-                    Matrix_sum += Abs_Matrix[:,:,int(round(t))]
-                Matrix_avg = Matrix_sum/Wavelength_time
-
-                # line = Matrix_avg[int(I*2/3),:]
-                line = Matrix_avg[int(y),:]
-
-                # plt.figure()
-                # plt.plot(liney,line)
-                # plt.show()
-                
-                # x_ting = np.linspace(0,Y,Y)
-
-                
-                popt, pcov = curve_fit(model_b,liney,line,p0=[guess_sig0l,guess_amp_l,guess_lx0
-                                                            ,guess_sig0r,guess_amp_r,guess_rx0],maxfev=5000)
-                perr = np.sqrt(np.diag(pcov))[0]
-
-                aa,bb,lx00,cc,dd,rx00 = popt
-                guess_lx0,guess_rx0,guess_amp_l,guess_amp_r,guess_sig0l,guess_sig0r = popt
-
-                Regressed_function = model_b(liney,aa,bb,lx00,cc,dd,rx00)
-
-                # plt.figure()
-                # plt.plot(liney,Regressed_function)
-                # plt.show()
-
-                Split_width = np.abs(lx00-rx00) + aa + cc
-
-                Width.append(Split_width)
-            except:
-                Width.append(1)
-
-        # print(Split_width)
-        # print(Split_width*dy)
-
-        plt.figure()
-        plt.plot(Area*dx,np.array(Width)*dy)
-        plt.show()
-
-
 
     # For single points:
     # ____________________________________________________________

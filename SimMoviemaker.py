@@ -37,14 +37,7 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0):
         shutil.rmtree(file)
         print('Making new throwaway folder')
         os.mkdir(file)
-        
-        # file_present = True
-        # while file_present:
-        #     filelist = os.listdir(os.path.join(os.getcwd(),file))
-        #     if len(filelist) == 0:
-        #         file_present = False
-        #     else:
-        #         input('Please empty the throwaway folder named ' + file)
+
         
     t0 = time()
 
@@ -154,7 +147,7 @@ def BigMovieMaker(Filename:str):
     filelist = os.listdir()
     vidlist = [vid for vid in filelist if vid.endswith('99.avi')]
     vidlist.sort
-    # input(vidlist)
+
     try:
         concatenate_videos(str(Filename +'.avi'),vidlist)
     except:
@@ -167,19 +160,3 @@ def BigMovieMaker(Filename:str):
 
     os.chdir(Traceback)
 
-
-    
-# new_video_path = 'Ey_Linear_med_B0_på_5e-1_V_big'
-# filelist = os.listdir(new_video_path)
-# videos = [vid for vid in filelist if vid.endswith('.avi')]
-
-# os.chdir(new_video_path)
-
-# vid = cv2.VideoCapture(os.videos[0])
-# while vid.isOpened():
-#     r,img = vid.read()
-#     break
-
-# height,width,layers = img.shape
-
-# print([height,width])

@@ -112,8 +112,6 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
 
             scale += blobmaker(blobposition[0],blobposition[1],blobradius,blobintensity)
 
-            # scale += blobmaker(I/4,J/3,30)
-            # scale += blobmaker(I/4,2*J/3,30)
 
         if Pmode == 'Blob' or Pmode == 'Linear':
             map1 = plt.pcolormesh(scale[:,:],cmap='seismic')
@@ -215,8 +213,9 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
                 Ez[t + 1, 1, :-1] = np.cos(angle)*np.exp((-((y_ax - J / 2)*dy / sig) ** 2)) * sinf
                 Ey[t + 1, 1, :-1] = np.sin(angle)*np.exp((-((y_ax - J / 2)*dy / sig) ** 2)) * sinf
 
-                # Boundary conditions for electric field
 
+
+                # Boundary conditions for electric field
                 
                 # #Reflecting boundary condition
                 # Ey[t+1,-1,:] = 0
@@ -225,10 +224,6 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
                 # Ez[t+1,-1,:] = 0
                 # Ez[t+1,:,-1] = 0
                 # Ez[t+1,:, 0] = 0
-
-
-                # def dmp_model_old(dmp_mat,dmp_i,dmp_l):
-                #     return np.exp((dmp_mat - (dmp_l + 1)) / dmp_i)
 
                 
                 # For the sides
@@ -301,19 +296,6 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
                 # Bz[t+1,1:,1] = 0
                 # Bz[t+1,-1,1:] = 0
 
-
-                # # Old Current density
-                # Jx[t + 1, 1:-1, 1: -1] = (Jx[t, 1:-1, 1:-1] + dt * epsilon * Ope ** 2 * Ex[t + 1, 1:-1, 1:-1] 
-                #                             - (e_q * dt) / e_m * (((Jy[t, 1:-1, 1:-1] + Jy[t, 1: -1, :-2] + Jy[t,2:,1:-1] + Jy[t,2:,:-2]) * (Bz[t, 1:-1, 1:-1] + Bz[t,1:-1, :-2])) / 8 
-                #                                                                 - ((Jz[t, 1:-1, 1:-1] + Jz[t,2:,1:-1]) * (By[t, 1:-1, 1:-1]) / 2)))
-                
-                # Jy[t + 1, 1:-1, 1:-1] = (Jy[t, 1:-1, 1:-1] + dt * epsilon * Ope ** 2 * Ey[t + 1, 1:-1, 1:-1] 
-                #                             - (e_q * dt) / e_m * (((Jz[t, 1:-1, 2:] + Jz[t, 1:-1,1:-1]) * Bx[t,1:-1,1:-1]) / 2 
-                #                                                                 - ((Jx[t, 1:-1,1:-1] + Jx[t, :-2,1:-1] + Jx[t,1:-1,2:] + Jx[t,:-2,2:]) * (Bz[t, 1:-1,1:-1] + Bz[t,:-2,1:-1])) / 8))
-
-                # Jz[t + 1, 1:-1, 1:-1] = (Jz[t, 1:-1, 1:-1] + dt * epsilon * Ope ** 2 * Ez[t + 1, 1:-1, 1:-1] 
-                #                             - (e_q * dt) / e_m * (((Jx[t, 1:-1, 1:-1] + Jx[t, :-2,1:-1]) * (By[t, 1:-1, 1:-1] + By[t,:-2,1:-1])) / 4 
-                #                                                                 - ((Jy[t, 1:-1, 1:-1] + Jy[t,1:-1,:-2]) * (Bx[t, 1:-1,1:-1] + Bx[t,1:-1,:-2])) / 4))
 
                 # New Current density
                 Jx[t + 1, 1:-1, 1: -1] = (Jx[t, 1:-1, 1:-1] + dt * epsilon * Ope ** 2 * Ex[t + 1, 1:-1, 1:-1] 
@@ -398,8 +380,6 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
                 print(str(int(round((100*kk+k)/T*100,3))) + '% of simulation done. Est time remaining: ' + str(t_remain_sec) + 'sec    ', end= '\r')
 
 
-
-
         timestamp = 't' + str(kk*100) + '-' + str(kk*100+99) 
         
         print('\n')
@@ -421,9 +401,3 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
         print('Writing time: '+ str(time.time()-t2) + 's')
 
         SaveMat = SaveMat[:,:,-1]
-
-
-
-        
-
-    pass
