@@ -41,8 +41,8 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0):
         
     t0 = time()
 
-    xlist = np.linspace(-I/2,I/2,I)*dx
-    ylist = np.linspace(0,J,J)*dy
+    ylist = np.linspace(-I/2,I/2,I)*dx
+    xlist = np.linspace(0,J,J)*dy
 
 
     # Makes the renditions of the field in the matrix and makes a png for each time point

@@ -39,6 +39,8 @@ y_list = y_list[:J]
 # plt.show()
 
 sigma = 0.02/rd.dx
+I += 1
+J += 1
 
 
 data_collection_location = 'C:/Users/augus/Onedrive/skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
@@ -46,9 +48,9 @@ os.chdir(data_collection_location)
 # data_folder_name = 'Blob_n_5e18_width_var'
 # data_name = 'X-mode_blob_test_sig_5e+1841_n_'
 # os.chdir(data_folder_name)
-angle = np.pi/2
+# angle = np.pi/2
 name = 'Sim_for_ne_1_X'
-# sim.WaveSim(400,I+1,J+1,sigma,field='Ey',CustomPMatrix=mat,B0=[0,0,0.5],wave_polarity_angle=angle,CustomName=name)
+# sim.WaveSim(400,I,J,sigma,field='Ey',CustomPMatrix=mat,B0=[0,0,0.5],wave_polarity_angle=angle,CustomName=name)
 
 # newmat,hundred = rd.ReadBigSim(name)
 
