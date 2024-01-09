@@ -233,6 +233,7 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
     plt.xlabel('X [m]')
     plt.ylabel('Y [m]')
     plt.savefig('{name} field plot.png'.format(name=name))
+    # plt.tight_layout()
     plt.show()
 
 def Waveabsavg(Matrix,start):

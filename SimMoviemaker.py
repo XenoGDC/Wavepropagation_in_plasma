@@ -63,7 +63,10 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0, P
 
         # Adds a contour plot in case a plasma density has been specified
         if plasma_present:
-            plt.contour(xlist[:-2],ylist[:-2],Pmatrix)
+            cmap = plt.contour(xlist[:-2],ylist[:-2],Pmatrix)
+            conbar = plt.colorbar(cmap)
+            conbar.set_label('Plasma density')
+            # plt.tight_layout()
 
         plt.title(name)
         plt.xlabel('y [m]')

@@ -55,6 +55,8 @@ sigma = 0.02/rd.dx
 
 I += 1
 J += 1
+
+# Write the directory for where you want to store your files here
 data_collection_location = 'C:/Users/augus/Onedrive/skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
 os.chdir(data_collection_location)
 angle_X = np.pi/2
