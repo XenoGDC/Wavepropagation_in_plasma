@@ -58,68 +58,68 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
     sig = sig0*dy
     n = omega**2/(e_q**2/e_m/epsilon)
     lam = c/omega
+    try:
+        if CustomPMatrix == None:
+            if Pmode == 'Vacuum':
+                scale = 0
 
-    if CustomPMatrix == None:
-        if Pmode == 'Vacuum':
-            scale = 0
-
-        if Pmode == 'Constant':
-            n_e = 0.9e17
-            scale = n_e
-        
-        elif Pmode == 'Linear':
-            # The scale is used as a value to multiply the plasma density into, 
-            # in case the plasma doesn't have a constant density.
-            scale = np.zeros([I-1,J-1])
-            # n_e = 1.5*np.linspace(0,n,J-1)
-            # lintheta = np.pi/4
-            lintheta = Linear_angle
-            if Linear_cutoff == 0:
-                Linear_cutoff = I/2
-
-            # n0 = 0.9e19/(400*np.cos(lintheta)+400*np.sin(lintheta))
-
-            def lindensityincrease(lintheta,x0,y0,n0,matrix):
-                n = n0/(x0*np.cos(lintheta)+y0*np.sin(lintheta))
-                scaletemp = np.ones(matrix.shape)
-                for xx in range(len(matrix[:,0])):
-                    for yy in range(len(matrix[0,:])):
-                        scaletemp[xx,yy] = n*(xx*np.cos(lintheta)+yy*np.sin(lintheta))
-                return scaletemp
+            if Pmode == 'Constant':
+                n_e = 0.9e17
+                scale = n_e
             
-            scale += lindensityincrease(lintheta,Linear_cutoff,J/2,0.97e19,scale)
-            
-            # for ii in range(I-1):
-            #     scale[ii,:] = scale[ii,:]*n_e[ii]
-        
+            elif Pmode == 'Linear':
+                # The scale is used as a value to multiply the plasma density into, 
+                # in case the plasma doesn't have a constant density.
+                scale = np.zeros([I-1,J-1])
+                # n_e = 1.5*np.linspace(0,n,J-1)
+                # lintheta = np.pi/4
+                lintheta = Linear_angle
+                if Linear_cutoff == 0:
+                    Linear_cutoff = I/2
 
-        elif Pmode == 'Blob':
-            # n0 = 0.9e20
-            # x0 = J/2
-            # y0 = I/2
-            # signy = 40
-            n0 = blobintensity
-            scale = np.zeros([I-1,J-1])
-            x = np.linspace(0,I,I)
-            y = np.linspace(0,J,J)
-            def blobmaker(x0,y0,signy,peak):
-                scaletemp = np.zeros([I-1,J-1])
-                for i in range(I-1):
-                    for j in range(J-1):
-                        scaletemp[i,j] = peak*np.exp(-(x[i]-x0)**2/signy**2-(y[j]-y0)**2/signy**2)
-                return scaletemp
+                # n0 = 0.9e19/(400*np.cos(lintheta)+400*np.sin(lintheta))
+
+                def lindensityincrease(lintheta,x0,y0,n0,matrix):
+                    n = n0/(x0*np.cos(lintheta)+y0*np.sin(lintheta))
+                    scaletemp = np.ones(matrix.shape)
+                    for xx in range(len(matrix[:,0])):
+                        for yy in range(len(matrix[0,:])):
+                            scaletemp[xx,yy] = n*(xx*np.cos(lintheta)+yy*np.sin(lintheta))
+                    return scaletemp
+                
+                scale += lindensityincrease(lintheta,Linear_cutoff,J/2,0.97e19,scale)
+                
+                # for ii in range(I-1):
+                #     scale[ii,:] = scale[ii,:]*n_e[ii]
             
 
-            scale += blobmaker(blobposition[0],blobposition[1],blobradius,blobintensity)
+            elif Pmode == 'Blob':
+                # n0 = 0.9e20
+                # x0 = J/2
+                # y0 = I/2
+                # signy = 40
+                n0 = blobintensity
+                scale = np.zeros([I-1,J-1])
+                x = np.linspace(0,I,I)
+                y = np.linspace(0,J,J)
+                def blobmaker(x0,y0,signy,peak):
+                    scaletemp = np.zeros([I-1,J-1])
+                    for i in range(I-1):
+                        for j in range(J-1):
+                            scaletemp[i,j] = peak*np.exp(-(x[i]-x0)**2/signy**2-(y[j]-y0)**2/signy**2)
+                    return scaletemp
+                
+
+                scale += blobmaker(blobposition[0],blobposition[1],blobradius,blobintensity)
 
 
-        if Pmode == 'Blob' or Pmode == 'Linear':
-            map1 = plt.pcolormesh(scale[:,:],cmap='seismic')
-            cbar = plt.colorbar(map1)
-            cbar.set_label('Plasma density')
-            plt.draw()
-            # plt.show()
-    else:
+            if Pmode == 'Blob' or Pmode == 'Linear':
+                map1 = plt.pcolormesh(scale[:,:],cmap='seismic')
+                cbar = plt.colorbar(map1)
+                cbar.set_label('Plasma density')
+                plt.draw()
+                # plt.show()
+    except:
         scale = np.zeros([I-1,J-1])
 
         scale += CustomPMatrix[:I,:J]
