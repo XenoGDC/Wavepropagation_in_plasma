@@ -10,7 +10,7 @@ import traceback
 dx,dy = rd.dx,rd.dy
 
 
-def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0):
+def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0, Pmatrix = None):
     t1 = time()
     #renaming some variables
     Mat = Matrix
@@ -21,6 +21,14 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0):
     J,I,T = np.shape(Matrix)
     
     print('\nMaking movie for ' + name + '\n')
+
+    plasma_present = False
+
+    try:
+        if Pmatrix.all() != None:
+            plasma_present = True
+    except:
+        pass
 
     # Sets up variables to remember the path and the file name for holding the images
     Path0 = os.getcwd()
@@ -52,6 +60,11 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0):
         cbar = plt.colorbar(map1)
         fieldname = str(name[0:2] + ' intensity')
         cbar.set_label(fieldname)
+
+        # Adds a contour plot in case a plasma density has been specified
+        if plasma_present:
+            plt.contour(xlist[:-2],ylist[:-2],Pmatrix)
+
         plt.title(name)
         plt.xlabel('y [m]')
         plt.ylabel('x [m]')
@@ -129,9 +142,18 @@ def concatenate_videos(new_video_path, videos):
 
     pass
 
-def BigMovieMaker(Filename:str):
+def BigMovieMaker(Filename:str,Pmatrix = None):
     Traceback = os.getcwd()
     os.chdir(Filename)
+    plasma_present = False
+    print(np.shape(Pmatrix))
+    try:
+        if Pmatrix.all() != None:
+            print(np.shape(Pmatrix))
+            plasma_present = True
+    except:
+        traceback.print_exc()
+        pass
 
     filelist = os.listdir()
     files = [data for data in filelist if data.endswith('.npy')]
@@ -142,7 +164,7 @@ def BigMovieMaker(Filename:str):
         name = files[i]
         mat = rd.SimReader(name)
         videoname = name[:-4]
-        SimMatMoviemaker(mat,len(mat[0,0,:]),videoname)
+        SimMatMoviemaker(mat,len(mat[0,0,:]),videoname,Pmatrix=Pmatrix)
 
     filelist = os.listdir()
     vidlist = [vid for vid in filelist if vid.endswith('99.avi')]
@@ -157,6 +179,7 @@ def BigMovieMaker(Filename:str):
 
     for oldvid in vidlist:
         os.remove(oldvid)
+    cv2.destroyAllWindows()
 
     os.chdir(Traceback)
 
