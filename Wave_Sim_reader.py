@@ -427,20 +427,33 @@ def CMAanalysis(Matrix,density_matrix,cutoff:int,B0,
 
     plt.show()
 
-def gimidensity(I,J,Linear_angle,cutoff: int = 0):
+def gimidensity(I,J,Linear_angle,Pmode,cutoff: int = 0,x0:int=0,y0:int=0,signy:int=0,peak:int=0):
     scale = np.zeros([I-1,J-1])
-    lintheta = Linear_angle
-    if cutoff == 0:
-        cutoff = I/2
-    def lindensityincrease(lintheta,x0,y0,n0,matrix):
-        n = n0/(x0*np.cos(lintheta)+y0*np.sin(lintheta))
-        scaletemp = np.ones(matrix.shape)
-        for xx in range(len(matrix[:,0])):
-            for yy in range(len(matrix[0,:])):
-                scaletemp[xx,yy] = n*(xx*np.cos(lintheta)+yy*np.sin(lintheta))
-        return scaletemp
+    if Pmode == 'Linear':
+        lintheta = Linear_angle
+        if cutoff == 0:
+            cutoff = I/2
+        def lindensityincrease(lintheta,x0,y0,n0,matrix):
+            n = n0/(x0*np.cos(lintheta)+y0*np.sin(lintheta))
+            scaletemp = np.ones(matrix.shape)
+            for xx in range(len(matrix[:,0])):
+                for yy in range(len(matrix[0,:])):
+                    scaletemp[xx,yy] = n*(xx*np.cos(lintheta)+yy*np.sin(lintheta))
+            return scaletemp
+        
+        scale += lindensityincrease(lintheta,cutoff,J/2,0.97e19,scale)
 
-    scale += lindensityincrease(lintheta,cutoff,J/2,0.97e19,scale)
+    elif Pmode == 'Blob':
+        x = np.linspace(0,I,I)
+        y = np.linspace(0,J,J)
+        def blobmaker(x0,y0,signy,peak):
+            scaletemp = np.zeros([I-1,J-1])
+            for i in range(I-1):
+                for j in range(J-1):
+                    scaletemp[i,j] = peak*np.exp(-(x[i]-x0)**2/signy**2-(y[j]-y0)**2/signy**2)
+            return scaletemp
+        scale += blobmaker(x0,y0,)
+            
     return scale
 
 def plotplasmadens(I,J:int,cutoffp,densitymatrix,B0:float,mode:str):
