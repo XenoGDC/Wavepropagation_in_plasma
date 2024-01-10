@@ -209,19 +209,32 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
 
     pass
 
-def PlotTimePoint(Matrix,name,t:int,hundred:int,field):
-    I,J,T = np.shape(Matrix)
+def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
+    J,I,T = np.shape(Matrix)
+
     linex = np.arange(I) * dx
     liney = np.arange(J) * dy
+
     timepoint = hundred*100 + t
     
     plt.figure()
+    
+    try:
+        if Pmatrix.all() != None:
+            cmap = plt.contour(linex[:-2],liney[:-2],Pmatrix)
+            contbar = plt.colorbar(cmap)
+            contbar.set_label('Plasma density')
+    except:
+        pass
+
     map1 = plt.pcolormesh(linex,liney,Matrix[:,:,t], cmap='seismic',vmin=-1,vmax=1)
     cbar = plt.colorbar(map1)
+
     cbar.set_label('{field} intensity'.format(field=field))
     plt.title('{name} at t = {time}'.format(name = name,time=timepoint))
-    plt.xlabel('X [m]')
-    plt.ylabel('Y [m]')
+    plt.xlabel('Y [m]')
+    plt.ylabel('X [m]')
+    plt.tight_layout()
     plt.savefig('{name} field plot.png'.format(name=name))
     plt.show()
 

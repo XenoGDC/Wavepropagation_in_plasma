@@ -40,6 +40,8 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
     Pmode = Plasma_type
     angle = wave_polarity_angle
 
+    fallback = os.getcwd()
+
 
     
     if not type(CustomName) == str:
@@ -401,3 +403,5 @@ def WaveSim(TimeSize: int, Xsize: int, Ysize: int, Gauss_beam_FWHM: int, angle_f
         print('Writing time: '+ str(time.time()-t2) + 's')
 
         SaveMat = SaveMat[:,:,-1]
+
+    os.chdir(fallback)
