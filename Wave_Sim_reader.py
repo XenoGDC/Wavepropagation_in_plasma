@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import os
 import WavePropagationSim as sim
+import traceback
 
 
 # Constants
@@ -494,15 +495,31 @@ def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cuto
     x1 = np.array([0,J-1])
     xmode = 1-B0/np.tan(np.pi/4)
     try:
-        if cutoff != None:
+        if cutoffp != None:
             if mode == 'O':
                 cutoff = cutoffp
+                y1 = np.array([dx*cutoff,dx*cutoff])
+                ax.plot(x1*dx, y1)
             elif mode == 'X':
                 cutoff = cutoffp * xmode
-            y1 = np.array([dx*cutoff,dx*cutoff])
-            ax.plot(x1*dx, y1)
+                y1 = np.array([dx*cutoff,dx*cutoff])
+                ax.plot(x1*dx, y1)
+            elif mode == 'Both':
+                cutoff1 = cutoffp
+                cutoff2 = cutoffp * xmode
+                y1 = np.array([dx*cutoff1,dx*cutoff1])
+                y2 = np.array([dx*cutoff2,dx*cutoff2])
+                ax.plot(x1*dx, y1, label='O-mode cutoff')
+                ax.plot(x1*dx, y2, label='X-mode cutoff')
+                ax.legend()
+                leg = ax.get_legend()
+                leg.legendHandles[0].set_color('blue')
+                leg.legendHandles[1].set_color('orange')
+
     except:
+        traceback.print_exc()
         pass
+
     map1 = ax.pcolormesh(linex,liney,densitymatrix, cmap='seismic')
     cbar = plt.colorbar(map1)
     cbar.set_label('Plasmadensity')
@@ -558,6 +575,7 @@ def AnalyseBlobDispersion(Matrix,Wavepoint,plotname:str='Blob_plot.png',timepoin
 
         plt.figure()
         plt.plot(liney*dy,Regressed_function)
+        plt.scatter(liney*dy,Regressed_function)
         plt.show()
 
         Split_width = np.abs(lx00-rx00) + aa + cc

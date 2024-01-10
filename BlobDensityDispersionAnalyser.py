@@ -1,5 +1,5 @@
 import numpy as np
-import BølgeSim_reader as rd
+import Wave_Sim_reader as rd
 from matplotlib import pyplot as plt
 import os
 from scipy.optimize import curve_fit
@@ -13,8 +13,8 @@ def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0):
     I,J,T = np.shape(Mat)
 
     #Model for the gaussian curve
-    def model_f(x,a,b):
-        return b*np.exp(-((x - J / 2)**2 / a**2))
+    def model_f(x,a,b,x0):
+        return b*np.exp(-((x - x0)**2 / a**2))
                 
     SigMatBig = np.abs(np.array(Mat[position,:,timepoint]))
     n = 1
@@ -33,32 +33,24 @@ def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0):
     # plt.plot(x_ting,SigMat)
     # plt.draw()
     # plt.pause(0.1)
-    # # time.sleep(3)
-    # plt.clf()
-
-
-    
-    popt, pcov = curve_fit(model_f,x_ting,SigMat,p0=[sig0,1])
-    # perr = np.sqrt(np.diag(pcov))[0]
-    print(popt)
-
-    
-    a,b = popt
-    # plt.figure()
-    # plt.plot(x_ting,model_f(x_ting,a,b))
-    # plt.draw()
-    # plt.pause(0.1)
     # time.sleep(3)
     # plt.clf()
-    # plt.clf()
-    # da,db = perr
-        
-    return b,a
+
 
     
+    popt, pcov = curve_fit(model_f,x_ting,SigMat,p0=[sig0,1,J/2])
+    perr = np.sqrt(np.diag(pcov))
+    # print(popt)
 
 
-def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = this_sig0,plotname:str = 'Blob Dispersion'):
+    
+    a,b,c = popt
+    da,db,dc = perr
+        
+    return b,a,db,da
+
+    
+def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = this_sig0,plotname:str = 'Blob Dispersion',plottitle = ''):
     
     hundred = int(timepoint/100)
     timepoint_s = int(timepoint-hundred*100)
@@ -72,7 +64,8 @@ def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = thi
     sigb = np.array([])
     dens = np.array([])
     width = np.array([])
-    print(files)
+    dsigm = np.array([])
+    # print(files)
 
     for i in range(len(sims)):
         
@@ -89,9 +82,11 @@ def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = thi
 
         I,J,T = np.shape(matrix)
 
-        a,sig = GaussSingleAnalysis(matrix,timepoint_s,position=int(I*2/3),sig0 = sig0)
+        a,sig,da,dsig = GaussSingleAnalysis(matrix,timepoint_s,position=int(I*2/3),sig0 = sig0)
         # print(sig)
         width = np.append(width,2*sig)
+        dsigm = np.append(dsigm,2*dsig)
+        
     
     if varmode == 'Density':
         variable = dens
@@ -102,12 +97,13 @@ def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = thi
     
 
     plt.figure()
-    plt.plot(variable,width*rd.dy)
+    plt.plot(variable,np.abs(width*rd.dy))
+    # plt.scatter(variable,width*rd.dy)
+    plt.errorbar(variable,np.abs(width*rd.dy),dsigm*rd.dy)
+    plt.title(plottitle)
     plt.xlabel('Plasma' + varmode)
     plt.ylabel('Apparent width at position ' + str(round(int(I*2/3)*rd.dx,3)) + ' [m]')
     plt.savefig(plotname + str('.png'))
 
     plt.show()
     
-    
-
