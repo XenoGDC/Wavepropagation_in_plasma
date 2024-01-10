@@ -228,7 +228,7 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:b
     pass
 
 def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
-    I,J,T = np.shape(Matrix)
+    J,I,T = np.shape(Matrix)
 
     linex = np.arange(I) * dx
     liney = np.arange(J) * dy
@@ -239,7 +239,9 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
     
     try:
         if Pmatrix.all() != None:
-            plt.contour(linex[:-2],liney[:-2],Pmatrix)
+            cmap = plt.contour(linex[:-2],liney[:-2],Pmatrix)
+            contbar = plt.colorbar(cmap)
+            contbar.set_label('Plasma density')
     except:
         pass
 
@@ -248,10 +250,10 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
 
     cbar.set_label('{field} intensity'.format(field=field))
     plt.title('{name} at t = {time}'.format(name = name,time=timepoint))
-    plt.xlabel('X [m]')
-    plt.ylabel('Y [m]')
+    plt.xlabel('Y [m]')
+    plt.ylabel('X [m]')
+    plt.tight_layout()
     plt.savefig('{name} field plot.png'.format(name=name))
-    # plt.tight_layout()
     plt.show()
 
 def Waveabsavg(Matrix,start):
