@@ -80,9 +80,14 @@ name3o = 'Sim_for_ne_3_O'
 
 # # newmat,hundred = rd.ReadBigSim(name)
 
-mkr.BigMovieMaker(name1x,mat1)
-mkr.BigMovieMaker(name2x,mat2)
-mkr.BigMovieMaker(name3x,mat3)
-mkr.BigMovieMaker(name1o,mat1)
-mkr.BigMovieMaker(name2o,mat2)
-mkr.BigMovieMaker(name3o,mat3)
+# mkr.BigMovieMaker(name1x,mat1)
+# mkr.BigMovieMaker(name2x,mat2)
+# mkr.BigMovieMaker(name3x,mat3)
+# mkr.BigMovieMaker(name1o,mat1)
+# mkr.BigMovieMaker(name2o,mat2)
+# mkr.BigMovieMaker(name3o,mat3)
+
+mat2,hundred = rd.ReadBigSim(name3o,1)
+# rd.GaussAnalyser(mat2,50,sig0=sigma,Vacuum=False)
+mat1 = rd.SimReader('Misc Data/Ez_vacuum_dmpl50_dmp_i_7')
+rd.GaussAnalyser(mat1,150)
