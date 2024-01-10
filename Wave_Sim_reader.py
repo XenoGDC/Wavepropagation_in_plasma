@@ -77,7 +77,7 @@ def ReadBigSim(filename: str = None,hundred: int = None):
     os.chdir(fallback)
     return Mat,choice    
 
-def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
+def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:bool = True):
     Mat = Matrix
     I,J,T = np.shape(Mat)
     print(I,J,T)
@@ -92,6 +92,11 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     #Model for the gaussian curve
     def model_f(x,a,b):
         return b*np.exp(-((x - Y / 2)**2 / a**2))
+    
+    def model_f2(x,a,b,c0): 
+        return b*np.exp(-((x - c0)**2 / a**2))
+    
+    c00 = Y/2
     
 
     # Defines X-positions where we analyse the curve along the y-axis
@@ -126,7 +131,13 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
 
     x_ting = np.linspace(0,Y,Y)
     
-    popt, pcov = curve_fit(model_f,x_ting,SigMat[0,:],p0=[sig0,1])
+    if Vacuum:
+        popt, pcov = curve_fit(model_f,x_ting,SigMat[0,:],p0=[sig0,1])
+    else:
+        popt, pcov = curve_fit(model_f2,x_ting,SigMat[0,:],p0=[sig0,1,c00])
+        c00 = popt[2]
+        c_sig,c_peak,c_pos = np.array(0),np.array(0),np.array(0)
+        c_sig,c_peak,c_pos = np.append(c_sig,(popt[0])),np.append(c_peak,popt[1]),np.append(c_pos,popt[2])
     perr = np.sqrt(np.diag(pcov))[0]
     if ShowStar:
         plt.title(str('Y-aksen plottet på x = ' + str(sig_pos[0])))
@@ -136,11 +147,16 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
         plt.pause(0.01)
         plt.clf()
 
+    
 
     
     for ii in range(1,w_count):
         #Makes a new popt and pcov we call poptx and pcovx for each sample.
-        poptx, pcovx = curve_fit(model_f,x_ting,SigMat[ii,:],p0=[np.max(popt),1],maxfev=5000)
+        if Vacuum:
+            poptx, pcovx = curve_fit(model_f,x_ting,SigMat[ii,:],p0=[np.max(popt),1],maxfev=5000)
+        else:
+            poptx, pcovx = curve_fit(model_f2,x_ting,SigMat[ii,:],p0=[np.max(c_sig),1,c_pos[-1]],maxfev=5000)
+            c_sig,c_peak,c_pos = np.append(c_sig,(poptx[0])),np.append(c_peak,poptx[1]),np.append(c_pos,poptx[2])
         #Stacks the individual popt and pcov on top of each other, even though the pcov isn't going to be used because the dimensions do not fit.
         popt, pcov = np.vstack((popt,poptx)), np.vstack((pcov,pcovx))
         
@@ -171,7 +187,8 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     #In the errorbar we scale the value of sigma and it's error to the real size by multiplying it with dy
     perr = dy*perr
     ax2.scatter(sig_pos*dx,dy*popt[:,0],label='Simulation')
-    ax2.plot(linx*dx, liny,label='Theory')
+    if Vacuum:
+        ax2.plot(linx*dx, liny,label='Theory')
     ax2.errorbar(sig_pos*dx,dy*popt[:,0],yerr=perr,fmt='o')
     ax2.set_title('Gaussian beam dispersion')
     ax2.set_xlabel('Position [m]')
@@ -179,7 +196,8 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60):
     ax2.legend()
     leg = ax2.get_legend()
     leg.legendHandles[0].set_color('orange')
-    leg.legendHandles[1].set_color('blue')
+    if Vacuum:
+        leg.legendHandles[1].set_color('blue')
     
     #____________________________________
     
