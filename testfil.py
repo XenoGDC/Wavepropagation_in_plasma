@@ -24,9 +24,7 @@ try:
 
     # rd.plotplasmadens(I,J,pMatrix,'Blob','X-mode',B0=0.5)
 
-    mat1 = np.load(os.path.join(path0,'ne_1_scaled.npy'))
-    # mat2 = np.load(os.path.join(path0,'ne_2_scaled.npy'))
-    # mat3 = np.load(os.path.join(path0,'ne_3_scaled.npy'))
+    mat1 = np.load(os.path.join(path0,'ne_1.npy'))
     x_list = np.load(os.path.join(path0,'x_list.npy'))
     y_list = np.load(os.path.join(path0,'y_list.npy'))
 
@@ -35,52 +33,43 @@ try:
     x_list = x_list[:I]
     y_list = y_list[:J]
 
-    # fig,ax = plt.subplots()
-
-    # map1 = ax.pcolormesh(y_list,x_list,mat2)
-    # bar = plt.colorbar(map1)
-    # plt.show()
-    # plt.clf()
-
-
-    # fig,ax = plt.subplots()
-    # map2 = ax.pcolormesh(y_list,x_list,mat3)
-    # bar = plt.colorbar(map2)
-    # plt.show()
-    # plt.clf()
 
     sigma = 0.02/rd.dx
 
     I += 1
     J += 1
 
-    # Write the directory for where you want to store your files here
+    # Write the directory for where you want to store your files here. It should contain the folder which holds the plasma profiles.
     data_collection_location = 'C:/Users/augus/Onedrive/skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
     os.chdir(data_collection_location)
+
+    # Name of folder to hold the densities and the simulated data
+    directory_name = 'Real_blobs_over_time'
+    os.chdir(directory_name)
+    files = os.listdir()
     angle_X = np.pi/2
     
 
     # name_vacuum = 'CustomP_vacuum_comparison'
     # sim.WaveSim(200,I,J,sigma,field='Ez',B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name_vacuum)
     
-    # Name of folder to hold the densities and the simulated data
-    directory_name = 'Real_blobs_over_time'
-    os.chdir(directory_name)
-    files = os.listdir()
+    
 
     # Make list over plasma profiles
     blobs = [file for file in files if file.endswith('.npy')]
     blobs = sorted(blobs)
     
     # Plot the plasma profiles
-    if True:
+    if False:
         for i in range(len(blobs)):
             blob_matrix = np.load(blobs[i])
             plt.pcolormesh(y_list,x_list[:I-1],blob_matrix)
             plt.show()
 
+    
+
     # Simulate all blobs
-    if True:
+    if False:
         print('Simulating for the blobs')
         B0 = [0,0,0.5]
         for blob in blobs:
@@ -124,12 +113,13 @@ try:
 
     # Wave width over time
     if True:
+        time_diff = 1.46e-6
         print('Plotting induced widths over time:')
         position = int(0.06/rd.dy)
         Widths = np.array([0.04555448373672055])
         dWidths = np.array([1.4987636159051634e-05])
         times = np.array([0])
-        t = 0.7
+        t = time_diff*10**6
         for file, blob in zip(Xmodes,blobs):
             matrix,hundred = rd.ReadBigSim(file,1)
 
@@ -137,17 +127,84 @@ try:
             Widths = np.append(Widths,sig*2*rd.dx)
             dWidths = np.append(dWidths,dsig*2*rd.dx)
             times = np.append(times,t)
-            t += 0.7
-        
-        plt.figure()
-        
-        plt.scatter(times,Widths)
-        plt.errorbar(times,Widths,dWidths)
-        plt.title('Widths at the plasma, 6cm away from start width of 4cm')
-        plt.xlabel('Timepoint [$\mu$s]')
-        plt.ylabel('Width at plasma [m]')
-        plt.savefig('Beam_widths_over_time.png')
-        plt.show()
+            t += time_diff*10**6
+
+        # Plot interesting plasma profiles
+        if False:
+            blob1 = np.load(blobs[0])
+            t1 = time_diff*1e6
+            blob2 = np.load(blobs[3])
+            t2 = time_diff*4e6
+            matrix_ex,hundred = rd.ReadBigSim(Xmodes[3],1)
+            mat_capt = matrix_ex[:,:,50]
+
+            blob3 = np.load(blobs[7])
+            t3 = time_diff*8e6
+            fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(2,2)
+
+            x_list = np.arange(I)*rd.dx
+            y_list = np.arange(J)*rd.dy
+            
+            ymarkline = np.array([position*rd.dx,position*rd.dx])
+            xmarkline = np.array([0,(J-1)*rd.dx])
+            
+            
+            fig.suptitle('Widths at the plasma, 6cm away from start width of 4cm')
+            
+            ax1.set_title('Measured widths')
+            ax1.scatter(times,Widths)
+            ax1.errorbar(times,Widths,dWidths)
+            ax1.set_xlabel('Timepoint [$\mu$s]')
+            ax1.set_ylabel('Width at plasma [m]')
+
+            ax2.pcolormesh(y_list,x_list,blob1)
+            ax2.set_title('t = {t1} [$\mu$s]'.format(t1=t1))
+            ax2.plot(xmarkline,ymarkline,label = 'Measured point')
+            ax2.legend()
+            ax2.set_xlabel('y [m]')
+            ax2.set_ylabel('x [m]')
+
+            ax3.pcolormesh(y_list[:],x_list[:],mat_capt[:-1,:-1],cmap='seismic')
+            ax3.contour(y_list[:-1],x_list[:-1],blob2)
+            ax3.set_title('t = {t2} [$\mu$s]'.format(t2=t2))
+            ax3.set_xlabel('y [m]')
+            ax3.set_ylabel('x [m]')
+
+            cmap = ax4.pcolormesh(y_list,x_list,blob3)
+            cbar = fig.colorbar(cmap)
+            cbar.set_label('Plasma density')
+            ax4.set_title('t = {t3} [$\mu$s]'.format(t3=t3))
+            ax4.set_xlabel('y [m]')
+            ax4.set_ylabel('x [m]')
+            
+            fig.tight_layout(pad=1.06)
+
+            fig.savefig('Beam_widths_over_time_with_blobs.png')
+            fig.show()
+            input()
+
+        if False:
+            plt.figure()
+            
+            plt.scatter(times,Widths)
+            plt.errorbar(times,Widths,dWidths)
+            plt.title('Widths at the plasma, 6cm away from start width of 4cm')
+            plt.xlabel('Timepoint [$\mu$s]')
+            plt.ylabel('Width at plasma [m]')
+            plt.savefig('Beam_widths_over_time.png')
+            plt.show()
+
+        #State the increase in width
+        increase_width = np.max(Widths)/np.min(Widths)-1
+        print('The beam gets {inc}% wider at the worst case'.format(inc=round(100*increase_width,3)))
+        print(Widths)
+
+    # Plot Gaussian fitting
+    if False:
+        os.chdir(os.path.join(data_collection_location,'Misc data'))
+        vac_mat = rd.SimReader('Ez_vacuum_dmpl50_dmp_i_7.npy')
+        blb.GaussSingleAnalysis(vac_mat,150,500,plotcurve=True)
+
 
 
     # name1x = 'Sim_for_ne_1_X'
@@ -174,8 +231,10 @@ try:
     # # rd.PlotTimePoint(mat21,name2,60,hun2,field='Ez',Pmatrix=mat2)
     # # rd.PlotTimePoint(mat31,name2,60,hun2,field='Ez',Pmatrix=mat3)
 
-    # # d_matrix = rd.gimidensity(2400,2400,0,'Linear',2400*3/4)
-    # # rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4))
+    # Plot the density for the linear increase
+    if False:
+        d_matrix = rd.gimidensity(2400,2400,0,'Linear',2400*3/4)
+        rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4),cmap='plasma')
 
     # blb.Blobdispersion('Blob_n_5e18_width_var',250,plotname = 'Blob_Dispersion_sig_var_n5e18',plottitle = 'Blob Dispersion with varying blob width'.format(n=round(5e18,3)),varmode = 'Width')
     # blb.Blobdispersion('Blob_n_1e18-1e19',250,plotname = 'Blob_Dispersion_n_var_sig30',plottitle = 'Blob Dispersion with varying plasma density'.format(n=round(5e18,3)))

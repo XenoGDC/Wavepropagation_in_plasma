@@ -5,10 +5,11 @@ import os
 from scipy.optimize import curve_fit
 import time
 
+dx = rd.dx
 this_sig0 = 0.025/rd.dx
 
 
-def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0):
+def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0,plotcurve=False):
 
     I,J,T = np.shape(Mat)
 
@@ -42,10 +43,32 @@ def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0):
     perr = np.sqrt(np.diag(pcov))
     # print(popt)
 
-
-    
     sig,amp,x0 = popt
     dsig,damp,dx0 = perr
+
+    #Make a plot with the cut and the fitting:
+    if plotcurve == True:
+        x_ax = np.arange(I)*dx
+        y_ax = np.linspace(-J/2,J/2,J)*dx
+        markx = np.array([0,I-1])*dx
+        marky = np.array([position,position])*dx
+        # fig,(ax1,ax2) = plt.subplots(1,2)
+        
+        # ax1.pcolormesh(y_ax,x_ax,Mat[:,:,timepoint],cmap='seismic')
+        # ax1.plot(markx,marky,label='Measured point')
+
+        plt.figure()
+        plt.title('Gaussian curve {pos} m in'.format(pos=round(position*dx,3)))
+        plt.plot(y_ax,SigMat,label='Absolute average')
+        plt.plot(y_ax,model_f(x_ting,sig,amp,x0),label='Fitted curve')
+        plt.xlabel('y [m]')
+        plt.ylabel('Field intensity')
+        plt.legend()
+        plt.savefig('Gaussian cut.png')
+        plt.show()
+        
+
+        
         
     return sig,amp,dsig,damp
 

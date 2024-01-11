@@ -228,7 +228,7 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:b
 
     pass
 
-def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
+def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None,Markline = None):
     J,I,T = np.shape(Matrix)
 
     linex = np.arange(I) * dx
@@ -251,6 +251,7 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
 
     cbar.set_label('{field} intensity'.format(field=field))
     plt.title('{name} at t = {time}'.format(name = name,time=timepoint))
+
     plt.xlabel('Y [m]')
     plt.ylabel('X [m]')
     plt.tight_layout()
@@ -488,7 +489,7 @@ def gimidensity(I,J,Linear_angle,Pmode,cutoff: int = 0,x0:int=0,y0:int=0,signy:i
             
     return scale
 
-def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cutoffp:int = None):
+def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cutoffp:int = None,cmap='seismic'):
     fig, ax = plt.subplots()
     linex = np.arange(I)*dx
     liney = np.arange(J)*dy
@@ -520,7 +521,7 @@ def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cuto
         traceback.print_exc()
         pass
 
-    map1 = ax.pcolormesh(linex,liney,densitymatrix, cmap='seismic')
+    map1 = ax.pcolormesh(linex,liney,densitymatrix, cmap=cmap)
     cbar = plt.colorbar(map1)
     cbar.set_label('Plasmadensity')
     ax.set_title('Plasmadensity for {pmode}'.format(pmode=Pmode))
