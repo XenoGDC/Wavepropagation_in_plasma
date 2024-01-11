@@ -11,10 +11,11 @@ from playsound import playsound
 try:
     # I,J = 600,600
     dfont = 'DejaVu Sans'
+
+    # Get the current path
     path0 = os.getcwd()
 
-    soundpath = 'C:/Users/augus/OneDrive/Skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
-    sound = os.path.join(soundpath,'ping.mp3')
+
     # Matrix,hundred = rd.ReadBigSim(data_name)
 
     # I,J,T = np.shape(Matrix)
@@ -24,23 +25,12 @@ try:
     # rd.plotplasmadens(I,J,pMatrix,'Blob','X-mode',B0=0.5)
 
     mat1 = np.load(os.path.join(path0,'ne_1_scaled.npy'))
-    mat2 = np.load(os.path.join(path0,'ne_2_scaled.npy'))
-    mat3 = np.load(os.path.join(path0,'ne_3_scaled.npy'))
+    # mat2 = np.load(os.path.join(path0,'ne_2_scaled.npy'))
+    # mat3 = np.load(os.path.join(path0,'ne_3_scaled.npy'))
     x_list = np.load(os.path.join(path0,'x_list.npy'))
     y_list = np.load(os.path.join(path0,'y_list.npy'))
 
-    # for val in mat1 if val >= 0.3e19:
-    #     val * 
-
-
-
-    # print('Mat dim {dim}'.format(dim=np.shape(mat1)))
-    # print('x_list dim {dim}'.format(dim=np.shape(x_list)))
-    # print('y_list dim {dim}'.format(dim=np.shape(y_list)))
-
-
     I,J = np.shape(mat1)
-
 
     x_list = x_list[:I]
     y_list = y_list[:J]
@@ -68,31 +58,29 @@ try:
     data_collection_location = 'C:/Users/augus/Onedrive/skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
     os.chdir(data_collection_location)
     angle_X = np.pi/2
-    # name1x = 'Sim_for_ne_1_X'
-    # name2x = 'Sim_for_ne_2_X'
-    # name3xs = 'Sim_for_ne_3_X_scaled'
-    # name1o = 'Sim_for_ne_1_O'
-    # name2o = 'Sim_for_ne_2_O'
-    # name3o = 'Sim_for_ne_3_O'
+    
 
     # name_vacuum = 'CustomP_vacuum_comparison'
-
     # sim.WaveSim(200,I,J,sigma,field='Ez',B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name_vacuum)
-    # sim.WaveSim(200,I,J,sigma,field='Ey',CustomPMatrix=mat3,B0=[0,0,0.5],wave_polarity_angle=angle_X,CustomName=name3xs)
-
-    # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat1,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name1o)
-    # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat2,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name2o)
-    # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat3,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name3o)
-
+    
     # Name of folder to hold the densities and the simulated data
     directory_name = 'Real_blobs_over_time'
     os.chdir(directory_name)
     files = os.listdir()
 
+    # Make list over plasma profiles
     blobs = [file for file in files if file.endswith('.npy')]
+    blobs = sorted(blobs)
+    
+    # Plot the plasma profiles
+    if True:
+        for i in range(len(blobs)):
+            blob_matrix = np.load(blobs[i])
+            plt.pcolormesh(y_list,x_list[:I-1],blob_matrix)
+            plt.show()
 
-    #Simulate all blobs
-    if False:
+    # Simulate all blobs
+    if True:
         print('Simulating for the blobs')
         B0 = [0,0,0.5]
         for blob in blobs:
@@ -117,13 +105,12 @@ try:
                 sim.WaveSim(200,I,J,sigma,B0=B0,Linear_angle=angle_X,field='Ey',CustomName=filenameO,CustomPMatrix=p_matrix)
             
             
-    # playsound(sound)
+    # Make sorted lists of simulations
     data_sim = [file for file in files if not '.' in file]
     Xmodes = [file for file in data_sim if file.endswith('X-mode')]
     Omodes = [file for file in data_sim if file.endswith('O-mode')]
     Xmodes = sorted(Xmodes)
     Omodes = sorted(Omodes)
-    blobs = sorted(blobs)
 
     # If there should be videos
     if False:
@@ -139,10 +126,10 @@ try:
     if True:
         print('Plotting induced widths over time:')
         position = int(0.06/rd.dy)
-        Widths = np.array([])
-        dWidths = np.array([])
-        times = np.array([])
-        t = 0
+        Widths = np.array([0.04555448373672055])
+        dWidths = np.array([1.4987636159051634e-05])
+        times = np.array([0])
+        t = 0.7
         for file, blob in zip(Xmodes,blobs):
             matrix,hundred = rd.ReadBigSim(file,1)
 
@@ -150,14 +137,14 @@ try:
             Widths = np.append(Widths,sig*2*rd.dx)
             dWidths = np.append(dWidths,dsig*2*rd.dx)
             times = np.append(times,t)
-            t += 1
+            t += 0.7
         
         plt.figure()
         
         plt.scatter(times,Widths)
         plt.errorbar(times,Widths,dWidths)
         plt.title('Widths at the plasma, 6cm away from start width of 4cm')
-        plt.xlabel('Timepoint, exact time unknown')
+        plt.xlabel('Timepoint [$\mu$s]')
         plt.ylabel('Width at plasma [m]')
         plt.savefig('Beam_widths_over_time.png')
         plt.show()
@@ -168,13 +155,7 @@ try:
 
     # # newmat,hundred = rd.ReadBigSim(name)
 
-    # mkr.BigMovieMaker(name1x,mat1)
-    # mkr.BigMovieMaker(name2x,mat2)
-    # mkr.BigMovieMaker(name3xs,mat3)
-    # mkr.BigMovieMaker(name1o,mat1)
-    # mkr.BigMovieMaker(name2o,mat2)
-    # mkr.BigMovieMaker(name3o,mat3)
-
+    
     # mat2,hundred = rd.ReadBigSim(name3o,1)
     # rd.GaussAnalyser(mat2,50,sig0=sigma,Vacuum=False)
     # mat1 = rd.SimReader('Misc Data/Ez_vacuum_dmpl50_dmp_i_7')
