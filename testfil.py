@@ -124,12 +124,13 @@ try:
 
     # Wave width over time
     if True:
+        time_diff = 1.46e-6
         print('Plotting induced widths over time:')
         position = int(0.06/rd.dy)
         Widths = np.array([0.04555448373672055])
         dWidths = np.array([1.4987636159051634e-05])
         times = np.array([0])
-        t = 0.7
+        t = time_diff*10**6
         for file, blob in zip(Xmodes,blobs):
             matrix,hundred = rd.ReadBigSim(file,1)
 
@@ -137,7 +138,7 @@ try:
             Widths = np.append(Widths,sig*2*rd.dx)
             dWidths = np.append(dWidths,dsig*2*rd.dx)
             times = np.append(times,t)
-            t += 0.7
+            t += time_diff*10**6
         
         plt.figure()
         
