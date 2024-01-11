@@ -24,9 +24,7 @@ try:
 
     # rd.plotplasmadens(I,J,pMatrix,'Blob','X-mode',B0=0.5)
 
-    mat1 = np.load(os.path.join(path0,'ne_1_scaled.npy'))
-    # mat2 = np.load(os.path.join(path0,'ne_2_scaled.npy'))
-    # mat3 = np.load(os.path.join(path0,'ne_3_scaled.npy'))
+    mat1 = np.load(os.path.join(path0,'ne_1.npy'))
     x_list = np.load(os.path.join(path0,'x_list.npy'))
     y_list = np.load(os.path.join(path0,'y_list.npy'))
 
@@ -199,6 +197,7 @@ try:
         #State the increase in width
         increase_width = np.max(Widths)/np.min(Widths)-1
         print('The beam gets {inc}% wider at the worst case'.format(inc=round(100*increase_width,3)))
+        print(Widths)
 
     # Plot Gaussian fitting
     if False:
