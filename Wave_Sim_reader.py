@@ -228,7 +228,7 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:b
 
     pass
 
-def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
+def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None,Markline = None):
     J,I,T = np.shape(Matrix)
 
     linex = np.arange(I) * dx
@@ -251,6 +251,7 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None):
 
     cbar.set_label('{field} intensity'.format(field=field))
     plt.title('{name} at t = {time}'.format(name = name,time=timepoint))
+
     plt.xlabel('Y [m]')
     plt.ylabel('X [m]')
     plt.tight_layout()
