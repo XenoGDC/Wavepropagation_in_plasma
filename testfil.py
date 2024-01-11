@@ -5,12 +5,16 @@ import Wave_Sim_reader as rd
 import WavePropagationSim as sim
 from matplotlib import pyplot as plt
 import BlobDensityDispersionAnalyser as blb
+from playsound import playsound
 
 
 try:
     # I,J = 600,600
+    dfont = 'DejaVu Sans'
     path0 = os.getcwd()
 
+    soundpath = 'C:/Users/augus/OneDrive/Skrivebord/DTU/Fagprojekt (bølgeudbredelse i plasme)'
+    sound = os.path.join(soundpath,'ping.mp3')
     # Matrix,hundred = rd.ReadBigSim(data_name)
 
     # I,J,T = np.shape(Matrix)
@@ -30,9 +34,9 @@ try:
 
 
 
-    print('Mat dim {dim}'.format(dim=np.shape(mat1)))
-    print('x_list dim {dim}'.format(dim=np.shape(x_list)))
-    print('y_list dim {dim}'.format(dim=np.shape(y_list)))
+    # print('Mat dim {dim}'.format(dim=np.shape(mat1)))
+    # print('x_list dim {dim}'.format(dim=np.shape(x_list)))
+    # print('y_list dim {dim}'.format(dim=np.shape(y_list)))
 
 
     I,J = np.shape(mat1)
@@ -66,7 +70,7 @@ try:
     angle_X = np.pi/2
     # name1x = 'Sim_for_ne_1_X'
     # name2x = 'Sim_for_ne_2_X'
-    name3xs = 'Sim_for_ne_3_X_scaled'
+    # name3xs = 'Sim_for_ne_3_X_scaled'
     # name1o = 'Sim_for_ne_1_O'
     # name2o = 'Sim_for_ne_2_O'
     # name3o = 'Sim_for_ne_3_O'
@@ -74,11 +78,89 @@ try:
     # name_vacuum = 'CustomP_vacuum_comparison'
 
     # sim.WaveSim(200,I,J,sigma,field='Ez',B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name_vacuum)
-    sim.WaveSim(200,I,J,sigma,field='Ey',CustomPMatrix=mat3,B0=[0,0,0.5],wave_polarity_angle=angle_X,CustomName=name3xs)
+    # sim.WaveSim(200,I,J,sigma,field='Ey',CustomPMatrix=mat3,B0=[0,0,0.5],wave_polarity_angle=angle_X,CustomName=name3xs)
 
     # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat1,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name1o)
     # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat2,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name2o)
     # sim.WaveSim(200,I,J,sigma,field='Ez',CustomPMatrix=mat3,B0=[0,0,0.5],wave_polarity_angle=0,CustomName=name3o)
+
+    # Name of folder to hold the densities and the simulated data
+    directory_name = 'Real_blobs_over_time'
+    os.chdir(directory_name)
+    files = os.listdir()
+
+    blobs = [file for file in files if file.endswith('.npy')]
+
+    #Simulate all blobs
+    if False:
+        print('Simulating for the blobs')
+        B0 = [0,0,0.5]
+        for blob in blobs:
+            # Clear the screen
+            os.system('cls')
+            filename = '{blob}_simulation'.format(blob=blob[:-4])
+            p_matrix = np.load(blob)
+            I,J = np.shape(p_matrix)
+            I += 1
+            J += 1
+
+            if True:
+                print('Simulating X-mode for {blob}'.format(blob=blob))
+                filenameX = '{default}_X-mode'.format(default=filename)
+                # X-mode first
+                sim.WaveSim(200,I,J,sigma,B0=B0,CustomName=filenameX,CustomPMatrix=p_matrix)
+
+            if False:
+                print('Simulating O-mode for {blob}'.format(blob=blob))
+                filenameO = '{default}_O-mode'.format(default=filename)
+                # O-mode after
+                sim.WaveSim(200,I,J,sigma,B0=B0,Linear_angle=angle_X,field='Ey',CustomName=filenameO,CustomPMatrix=p_matrix)
+            
+            
+    # playsound(sound)
+    data_sim = [file for file in files if not '.' in file]
+    Xmodes = [file for file in data_sim if file.endswith('X-mode')]
+    Omodes = [file for file in data_sim if file.endswith('O-mode')]
+    Xmodes = sorted(Xmodes)
+    Omodes = sorted(Omodes)
+    blobs = sorted(blobs)
+
+    # If there should be videos
+    if False:
+        # Making videos for the X-mode simulations
+        for i in range(len(Xmodes)):
+            mkr.BigMovieMaker(Xmodes[i],Pmatrix=blob[i])
+
+        # Making videos for the O-mode simulations
+        for i in range(len(Omodes)):
+            mkr.BigMovieMaker(Omodes[i],Pmatrix=blob[i])
+
+    # Wave width over time
+    if True:
+        print('Plotting induced widths over time:')
+        position = int(0.06/rd.dy)
+        Widths = np.array([])
+        dWidths = np.array([])
+        times = np.array([])
+        t = 0
+        for file, blob in zip(Xmodes,blobs):
+            matrix,hundred = rd.ReadBigSim(file,1)
+
+            sig,amp,dsig,damp = blb.GaussSingleAnalysis(matrix,50,position=position,sig0=sigma)
+            Widths = np.append(Widths,sig*2*rd.dx)
+            dWidths = np.append(dWidths,dsig*2*rd.dx)
+            times = np.append(times,t)
+            t += 1
+        
+        plt.figure()
+        
+        plt.scatter(times,Widths)
+        plt.errorbar(times,Widths,dWidths)
+        plt.title('Widths at the plasma, 6cm away from start width of 4cm')
+        plt.xlabel('Timepoint, exact time unknown')
+        plt.ylabel('Width at plasma [m]')
+        plt.savefig('Beam_widths_over_time.png')
+        plt.show()
 
 
     # name1x = 'Sim_for_ne_1_X'
@@ -88,7 +170,7 @@ try:
 
     # mkr.BigMovieMaker(name1x,mat1)
     # mkr.BigMovieMaker(name2x,mat2)
-    mkr.BigMovieMaker(name3xs,mat3)
+    # mkr.BigMovieMaker(name3xs,mat3)
     # mkr.BigMovieMaker(name1o,mat1)
     # mkr.BigMovieMaker(name2o,mat2)
     # mkr.BigMovieMaker(name3o,mat3)

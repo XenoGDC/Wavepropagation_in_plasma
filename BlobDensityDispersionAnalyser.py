@@ -44,10 +44,10 @@ def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0):
 
 
     
-    a,b,c = popt
-    da,db,dc = perr
+    sig,amp,x0 = popt
+    dsig,damp,dx0 = perr
         
-    return b,a,db,da
+    return sig,amp,dsig,damp
 
     
 def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = this_sig0,plotname:str = 'Blob Dispersion',plottitle = ''):
@@ -82,7 +82,7 @@ def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = thi
 
         I,J,T = np.shape(matrix)
 
-        a,sig,da,dsig = GaussSingleAnalysis(matrix,timepoint_s,position=int(I*2/3),sig0 = sig0)
+        sig,amp,dsig,damp = GaussSingleAnalysis(matrix,timepoint_s,position=int(I*2/3),sig0 = sig0)
         # print(sig)
         width = np.append(width,2*sig)
         dsigm = np.append(dsigm,2*dsig)
