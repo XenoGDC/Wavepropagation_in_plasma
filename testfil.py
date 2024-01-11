@@ -35,19 +35,6 @@ try:
     x_list = x_list[:I]
     y_list = y_list[:J]
 
-    # fig,ax = plt.subplots()
-
-    # map1 = ax.pcolormesh(y_list,x_list,mat2)
-    # bar = plt.colorbar(map1)
-    # plt.show()
-    # plt.clf()
-
-
-    # fig,ax = plt.subplots()
-    # map2 = ax.pcolormesh(y_list,x_list,mat3)
-    # bar = plt.colorbar(map2)
-    # plt.show()
-    # plt.clf()
 
     sigma = 0.02/rd.dx
 
@@ -127,7 +114,7 @@ try:
             mkr.BigMovieMaker(Omodes[i],Pmatrix=blob[i])
 
     # Wave width over time
-    if False:
+    if True:
         time_diff = 1.46e-6
         print('Plotting induced widths over time:')
         position = int(0.06/rd.dy)
@@ -145,7 +132,7 @@ try:
             t += time_diff*10**6
 
         # Plot interesting plasma profiles
-        if True:
+        if False:
             blob1 = np.load(blobs[0])
             t1 = time_diff*1e6
             blob2 = np.load(blobs[3])
@@ -209,8 +196,12 @@ try:
             plt.savefig('Beam_widths_over_time.png')
             plt.show()
 
+        #State the increase in width
+        increase_width = np.max(Widths)/np.min(Widths)-1
+        print('The beam gets {inc}% wider at the worst case'.format(inc=round(100*increase_width,3)))
 
-    if True:
+    # Plot Gaussian fitting
+    if False:
         os.chdir(os.path.join(data_collection_location,'Misc data'))
         vac_mat = rd.SimReader('Ez_vacuum_dmpl50_dmp_i_7.npy')
         blb.GaussSingleAnalysis(vac_mat,150,500,plotcurve=True)
@@ -241,8 +232,10 @@ try:
     # # rd.PlotTimePoint(mat21,name2,60,hun2,field='Ez',Pmatrix=mat2)
     # # rd.PlotTimePoint(mat31,name2,60,hun2,field='Ez',Pmatrix=mat3)
 
-    # # d_matrix = rd.gimidensity(2400,2400,0,'Linear',2400*3/4)
-    # # rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4))
+    # Plot the density for the linear increase
+    if False:
+        d_matrix = rd.gimidensity(2400,2400,0,'Linear',2400*3/4)
+        rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4),cmap='plasma')
 
     # blb.Blobdispersion('Blob_n_5e18_width_var',250,plotname = 'Blob_Dispersion_sig_var_n5e18',plottitle = 'Blob Dispersion with varying blob width'.format(n=round(5e18,3)),varmode = 'Width')
     # blb.Blobdispersion('Blob_n_1e18-1e19',250,plotname = 'Blob_Dispersion_n_var_sig30',plottitle = 'Blob Dispersion with varying plasma density'.format(n=round(5e18,3)))

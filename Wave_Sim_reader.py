@@ -489,7 +489,7 @@ def gimidensity(I,J,Linear_angle,Pmode,cutoff: int = 0,x0:int=0,y0:int=0,signy:i
             
     return scale
 
-def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cutoffp:int = None):
+def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cutoffp:int = None,cmap='seismic'):
     fig, ax = plt.subplots()
     linex = np.arange(I)*dx
     liney = np.arange(J)*dy
@@ -521,7 +521,7 @@ def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str,B0:float = None,cuto
         traceback.print_exc()
         pass
 
-    map1 = ax.pcolormesh(linex,liney,densitymatrix, cmap='seismic')
+    map1 = ax.pcolormesh(linex,liney,densitymatrix, cmap=cmap)
     cbar = plt.colorbar(map1)
     cbar.set_label('Plasmadensity')
     ax.set_title('Plasmadensity for {pmode}'.format(pmode=Pmode))
