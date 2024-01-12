@@ -112,7 +112,7 @@ try:
             mkr.BigMovieMaker(Omodes[i],Pmatrix=blob[i])
 
     # Wave width over time
-    if True:
+    if False:
         time_diff = 1.46e-6
         print('Plotting induced widths over time:')
         position = int(0.06/rd.dy)
@@ -235,6 +235,36 @@ try:
     if False:
         d_matrix = rd.gimidensity(2400,2400,0,'Linear',2400*3/4)
         rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4),cmap='plasma')
+
+    # Plot different captures of the fields:
+    if True:
+        # for the blob:
+        if False:
+
+            os.chdir(os.path.join(data_collection_location,'Blob_n_5e18_width_var'))
+            d_matrix = rd.gimidensity(2400,2400,0,'Blob',x0=int(2400/3),y0=1200,signy=41,peak=5e18)
+            rd.plotplasmadens(2400,2400,d_matrix,'Blob',cmap='plasma')
+
+            mat,hundred = rd.ReadBigSim('X-mode_blob_test_sig_5e+1841_n_',2)
+            
+            rd.PlotTimePoint(mat,'Blob',40,hundred,'Ey')
+
+        # For the vacuum
+        if False:
+            os.chdir(data_collection_location)
+            os.chdir('Misc data')
+            mat = rd.SimReader('Ez_vacuum_dmpl50_dmp_i_7')
+            rd.PlotTimePoint(mat,'Vacuum',150,0,'Ez')
+        
+        # For the linear
+        if True:
+            print('Plotting the linear simulation')
+            os.chdir(data_collection_location)
+            mat,hundred = rd.ReadBigSim('Ez_Linear_V_big',5)
+            rd.PlotTimePoint(mat,'Linear',50,hundred,'Ez')
+
+
+
 
     # blb.Blobdispersion('Blob_n_5e18_width_var',250,plotname = 'Blob_Dispersion_sig_var_n5e18',plottitle = 'Blob Dispersion with varying blob width'.format(n=round(5e18,3)),varmode = 'Width')
     # blb.Blobdispersion('Blob_n_1e18-1e19',250,plotname = 'Blob_Dispersion_n_var_sig30',plottitle = 'Blob Dispersion with varying plasma density'.format(n=round(5e18,3)))
