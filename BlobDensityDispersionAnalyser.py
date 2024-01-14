@@ -10,7 +10,9 @@ this_sig0 = 0.025/rd.dx
 
 
 def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0,plotcurve=False):
-
+    '''Fits a gaussian curve to a single cut of the matrix at a given timepoint and position.
+    Returns the width of the gaussian curve, the amplitude and the error on the width.
+    If plotcurve is True, it will plot the cut and the fitted curve.'''
     I,J,T = np.shape(Mat)
 
     #Model for the gaussian curve
@@ -74,7 +76,7 @@ def GaussSingleAnalysis(Mat,timepoint:int,position:int,sig0:int = this_sig0,plot
 
     
 def Blobdispersion(File:str,timepoint:int,varmode:str = 'Density',sig0:int = this_sig0,plotname:str = 'Blob Dispersion',plottitle = ''):
-    
+    '''Plots the dispersion from a blob of plasma with varying density or width of the blob.'''
     hundred = int(timepoint/100)
     timepoint_s = int(timepoint-hundred*100)
     fallback = os.getcwd()

@@ -30,6 +30,7 @@ path0 = os.getcwd()
 #         pass
 
 def SimReader(Customname: str = None):
+    '''Reads a simulation file that is saved as a single .npy file. If no name is given, the function will ask for a file to read.'''
     if Customname == None:
 
         files = os.listdir(path0)
@@ -58,6 +59,8 @@ def SimReader(Customname: str = None):
     return arr
         
 def ReadBigSim(filename: str = None,hundred: int = None):
+    '''Reads a larger simulation file that is saved as multiple .npy files in a folder.
+    "hundred" indicates which file to read, and if none is given, the function will ask for a file to read."'''
     fallback = os.getcwd()
     os.chdir(filename)
 
@@ -79,6 +82,8 @@ def ReadBigSim(filename: str = None,hundred: int = None):
     return Mat,choice    
 
 def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:bool = True):
+    '''Makes 100 slices of the matrix along the y-axis and fits a gaussian curve to each slice.
+    It then plots the sigmas of the fitted gaussian curves against the x-position of the slices and compares these values with the theoretic function of the dispersion of a gaussian beam.'''
     Mat = Matrix
     I,J,T = np.shape(Mat)
     print(I,J,T)
@@ -229,6 +234,7 @@ def GaussAnalyser(Matrix, TimePosition: int, ShowStar = False,sig0 = 60,Vacuum:b
     pass
 
 def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None,Markline = None):
+    '''Plots a timepoint of a matrix with a colorbar. If a Pmatrix is given, it will also plot the plasma density as a contour plot.'''
     J,I,T = np.shape(Matrix)
 
     linex = np.arange(I) * dx
@@ -259,6 +265,7 @@ def PlotTimePoint(Matrix,name,t:int,hundred:int,field,Pmatrix = None,Markline = 
     plt.show()
 
 def Waveabsavg(Matrix,start):
+    '''Plots the average of the absolute value of the matrix over a given time interval.'''
     difference = 2*int(lambdt/dt/11)
     print(difference)
     MatAvg = np.zeros(Matrix[:,:,0].shape)
@@ -461,6 +468,7 @@ def CMAanalysis(Matrix,density_matrix,cutoff:int,B0,
     plt.show()
 
 def gimidensity(I,J,Linear_angle,Pmode,cutoff: int = 0,x0:int=0,y0:int=0,signy:int=0,peak:int=0):
+    '''Takes the settings for the plasma density and returns a matrix with the plasma density in each point.'''
     scale = np.zeros([I-1,J-1])
     if Pmode == 'Linear':
         lintheta = Linear_angle
@@ -490,6 +498,7 @@ def gimidensity(I,J,Linear_angle,Pmode,cutoff: int = 0,x0:int=0,y0:int=0,signy:i
     return scale
 
 def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str = None,B0:float = 0.25,cutoffp:int = None,cmap='seismic'):
+    '''Plots the plasma density as a heatmap. If a cutoff is given, it will also plot the cutoff for the given mode.'''
     fig, ax = plt.subplots()
     linex = np.arange(I)*dx
     liney = np.arange(J)*dy
@@ -531,6 +540,8 @@ def plotplasmadens(I,J:int,densitymatrix,Pmode:str,mode:str = None,B0:float = 0.
     fig.show()
 
 def AnalyseBlobDispersion(Matrix,Wavepoint,plotname:str='Blob_plot.png',timepoint:int=50):
+    '''Unfinished function that is supposed to analyse the dispersion of a blob.
+    The actual function used is in the BlobDensityDispersionAnalyser.py file.'''
     I,J,T = np.shape(Matrix)
 
     liney = np.arange(J)

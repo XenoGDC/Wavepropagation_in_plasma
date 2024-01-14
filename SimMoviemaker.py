@@ -11,6 +11,7 @@ dx,dy = rd.dx,rd.dy
 
 
 def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0, Pmatrix = None):
+    '''Makes a movie of the matrix given. The movie is saved as an avi file in the folder where the matrix is located.'''
     t1 = time()
     #renaming some variables
     Mat = Matrix
@@ -121,6 +122,7 @@ def SimMatMoviemaker(Matrix,EndFrame: int, Moviename: str,StartFrame: int = 0, P
     print('Elapsed time: ' + str(int(round(t2))) + 'sec\n')
 
 def concatenate_videos(new_video_path, videos):
+    '''Concatenates videos into one video. The videos must be in the same folder as the script.'''
 
     vid = cv2.VideoCapture(videos[0])
     while vid.isOpened():
@@ -146,6 +148,7 @@ def concatenate_videos(new_video_path, videos):
     pass
 
 def BigMovieMaker(Filename:str,Pmatrix = None):
+    '''Makes a movie for a larger simulation and saves it as an avi file in the simulation folder.'''
     Traceback = os.getcwd()
     os.chdir(Filename)
     plasma_present = False
