@@ -102,14 +102,20 @@ try:
     Omodes = sorted(Omodes)
 
     # If there should be videos
-    if False:
-        # Making videos for the X-mode simulations
-        for i in range(len(Xmodes)):
-            mkr.BigMovieMaker(Xmodes[i],Pmatrix=blob[i])
+    if True:
+        if True:
+            # Making videos for the X-mode simulations
+            for Xmode,blob in zip(Xmodes[1:],blobs[1:]):
+            # for i in range(len(Xmodes)):
+                p_matrix = np.load(blob)
+                mkr.BigMovieMaker(Xmode,Pmatrix=p_matrix)
 
-        # Making videos for the O-mode simulations
-        for i in range(len(Omodes)):
-            mkr.BigMovieMaker(Omodes[i],Pmatrix=blob[i])
+        if False:
+            # Making videos for the O-mode simulations
+            for Omode,blob in zip(Omodes,blobs):
+            # for i in range(len(Omodes)):
+                p_matrix = np.load(blob)
+                mkr.BigMovieMaker(Omode,Pmatrix=p_matrix)
 
     # Wave width over time
     if False:
@@ -130,7 +136,7 @@ try:
             t += time_diff*10**6
 
         # Plot interesting plasma profiles
-        if False:
+        if True:
             blob1 = np.load(blobs[0])
             t1 = time_diff*1e6
             blob2 = np.load(blobs[3])
@@ -237,7 +243,7 @@ try:
         rd.plotplasmadens(2400,2400,d_matrix,'Linear','Both',B0=0.25,cutoffp=int(2400*3/4),cmap='plasma')
 
     # Plot different captures of the fields:
-    if True:
+    if False:
         # for the blob:
         if False:
 
@@ -257,7 +263,7 @@ try:
             rd.PlotTimePoint(mat,'Vacuum',150,0,'Ez')
         
         # For the linear
-        if True:
+        if False:
             print('Plotting the linear simulation')
             os.chdir(data_collection_location)
             mat,hundred = rd.ReadBigSim('Ez_Linear_V_big',5)
