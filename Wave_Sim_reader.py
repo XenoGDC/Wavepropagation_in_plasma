@@ -630,7 +630,8 @@ def PlotDampenedBoundary(I,J,dmp_l,dampening_intensity):
     y_line = Matrix[1,-dmp_l-1:]
 
     fig,(ax1,ax2) = plt.subplots(2,1)
-    'Set the aspect ratio to 1:16'
+    
+    # Sets the aspect ratio of the plot to 6:9
     fig.set_figheight(9)
     fig.set_figwidth(6)
     fig.suptitle('Dampened boundary',fontsize=20)
