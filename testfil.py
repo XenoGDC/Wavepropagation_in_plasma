@@ -102,7 +102,7 @@ try:
     Omodes = sorted(Omodes)
 
     # If there should be videos
-    if True:
+    if False:
         if True:
             # Making videos for the X-mode simulations
             for Xmode,blob in zip(Xmodes[1:],blobs[1:]):
@@ -287,7 +287,7 @@ try:
     # print('The widths are {sigs} $\plusmn$ {dsigs}'.format(sigs=sig1*2*rd.dy,dsigs=dsig1*2*rd.dy))
     # input()
     
-
+    rd.PlotDampenedBoundary(100,100,50,7)
 
 
 except:

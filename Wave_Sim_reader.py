@@ -593,4 +593,53 @@ def AnalyseBlobDispersion(Matrix,Wavepoint,plotname:str='Blob_plot.png',timepoin
         Split_width = np.abs(lx00-rx00) + aa + cc
 
 
+def PlotDampenedBoundary(I,J,dmp_l,dampening_intensity):
+    '''Plots a matrix with dampening boundaries. The dampening is an exponential function that the matrix is multiplied with.'''
+    Matrix = np.ones([I+1,J+1])
+
+    # Dampening boundary conditions:
+    # dmp_l sets the distance from the boundary that the dampening begins
+    dmp_mx = np.ones([1-dmp_l+I,dmp_l])*np.linspace(1,dmp_l,dmp_l)
+    dmp_my = np.flip(np.transpose(np.ones([1-2*dmp_l+J,dmp_l])*np.linspace(1,dmp_l,dmp_l)))
+    dmp_mx_t = np.transpose(dmp_mx[:dmp_l,:])
+    dist_m = (dmp_mx[:dmp_l,:]**2 + dmp_mx_t**2)**0.5
+    
+    dmp_cn = np.zeros([dmp_l,dmp_l])
+    for ii in range(dmp_l):
+        for jj in range(dmp_l):
+            dmp_cn[ii,jj] = min([dmp_mx[0,ii],dmp_my[jj,0]])
+    dmp_cnr = np.flip(dmp_cn,0)
+    dmp_cnl = np.flip(dmp_cnr,1)
+    
+    # dmp_i sets the intensity of the dampening, with higher values dampening over longer periods.
+    dmp_i = dmp_l / dampening_intensity
+
+    def dmp_model(dmp_mat,dmp_i):
+        return (1-np.exp((1-dmp_mat) / dmp_i))
+    
+     # For the sides
+    Matrix[-dmp_l:, dmp_l:-dmp_l] = dmp_model(dmp_my,dmp_i) * Matrix[-dmp_l:, dmp_l:-dmp_l]
+    Matrix[:-dmp_l, :dmp_l] = dmp_model(dmp_mx,dmp_i) * Matrix[:-dmp_l, :dmp_l]
+    Matrix[:-dmp_l, -dmp_l:] = dmp_model(np.flip(dmp_mx,1),dmp_i) * Matrix[:-dmp_l, -dmp_l:]
+    
+    # For the corners
+    Matrix[-dmp_l:, -dmp_l:] = dmp_model(dmp_cnr,dmp_i) * Matrix[-dmp_l:, -dmp_l:]
+    Matrix[-dmp_l:, :dmp_l] = dmp_model(dmp_cnl,dmp_i) * Matrix[-dmp_l:, :dmp_l]
+
+    x_line = (np.arange(dmp_l+1))
+    y_line = Matrix[1,-dmp_l-1:]
+
+    fig,(ax1,ax2) = plt.subplots(2,1)
+    'Set the aspect ratio to 1:16'
+    fig.set_figheight(9)
+    fig.set_figwidth(6)
+    fig.suptitle('Dampened boundary',fontsize=20)
+    ax1.set_title('Boundary map',fontsize=16)
+    ax1.pcolormesh(Matrix[int(I*1/3):],cmap='plasma')
+    ax2.set_title('Dampening function at right boundary',fontsize=16)
+    ax2.plot(x_line,y_line)
+    fig.tight_layout()
+    plt.savefig('Dampening_boundary.png',format='png')
+    plt.show()
+
 
